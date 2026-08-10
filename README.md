@@ -9,7 +9,6 @@ This repository is the reproducibility artefact for:
 > Different Failures in Machine-Authored Data Quality Rules.* (under review)
 
 [![DOI](https://zenodo.org/badge/1329363037.svg)](https://doi.org/10.5281/zenodo.21875068)
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
