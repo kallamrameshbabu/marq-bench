@@ -8,7 +8,8 @@ This repository is the reproducibility artefact for:
 > Ramesh Babu Kallam, *No Single Source Suffices: Documentation and Profiling Prevent
 > Different Failures in Machine-Authored Data Quality Rules.* (under review)
 
-[![DOI](https://zenodo.org/badge/DOI/PLACEHOLDER.svg)](https://doi.org/PLACEHOLDER)
+[![DOI](https://zenodo.org/badge/1329363037.svg)](https://doi.org/10.5281/zenodo.21875068)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
