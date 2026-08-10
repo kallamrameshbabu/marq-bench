@@ -1,0 +1,36 @@
+{
+  "notebook": "P2_N2_generation_sweep",
+  "generated_at_utc": "2026-08-08T21:58:24+00:00",
+  "generate_version": "1.0.0",
+  "prompt_version": "1.0.0",
+  "mode": "full",
+  "temperature": 0.7,
+  "models": [
+    "claude-sonnet-4-5-20250929",
+    "claude-haiku-4-5-20251001"
+  ],
+  "pricing": {
+    "claude-sonnet-4-5-20250929": [
+      3.0,
+      15.0
+    ],
+    "claude-haiku-4-5-20251001": [
+      1.0,
+      5.0
+    ]
+  },
+  "run_log": "/content/drive/MyDrive/Paper2_RuleAuthorship/runs/runs.jsonl",
+  "summary": {
+    "runs": 350,
+    "ok": 350,
+    "failed": 0,
+    "cost_usd": 10.8893,
+    "by_model": {
+      "mock-1": 12,
+      "claude-opus-4-8": 12,
+      "claude-sonnet-4-5-20250929": 160,
+      "qwen2.5-7b": 6,
+      "claude-haiku-4-5-20251001": 160
+    }
+  }
+}

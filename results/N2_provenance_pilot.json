@@ -1,0 +1,29 @@
+{
+  "notebook": "P2_N2_generation_sweep",
+  "generated_at_utc": "2026-08-08T16:27:02+00:00",
+  "generate_version": "1.0.0",
+  "prompt_version": "1.0.0",
+  "mode": "pilot",
+  "temperature": 0.7,
+  "models": [
+    "claude-sonnet-4-5-20250929"
+  ],
+  "pricing": {
+    "claude-sonnet-4-5-20250929": [
+      3.0,
+      15.0
+    ]
+  },
+  "run_log": "/content/drive/MyDrive/Paper2_RuleAuthorship/runs/runs.jsonl",
+  "summary": {
+    "runs": 36,
+    "ok": 36,
+    "failed": 0,
+    "cost_usd": 3.0709,
+    "by_model": {
+      "mock-1": 12,
+      "claude-opus-4-8": 12,
+      "claude-sonnet-4-5-20250929": 12
+    }
+  }
+}

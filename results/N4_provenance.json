@@ -1,0 +1,73 @@
+{
+  "notebook": "P2_N4_downstream",
+  "generated_at_utc": "2026-08-09T15:21:48+00:00",
+  "downstream_version": "1.0.0",
+  "excluded_models": [
+    "claude-opus-4-8",
+    "mock-1",
+    "qwen2.5-7b"
+  ],
+  "test_fraction": 0.3,
+  "split_seed": 20260807,
+  "tasks": {
+    "bank_marketing": {
+      "target": "y",
+      "dropped": [
+        "y",
+        "duration"
+      ],
+      "subgroups": [
+        "age_band",
+        "job",
+        "marital"
+      ],
+      "note": "`duration` dropped: known only after the call, documented by UCI as unsuitable for realistic prediction."
+    },
+    "diabetes_130us": {
+      "target": "readmitted",
+      "dropped": [
+        "readmitted",
+        "encounter_id",
+        "patient_nbr"
+      ],
+      "subgroups": [
+        "race",
+        "gender",
+        "age"
+      ],
+      "note": "Binarised to readmission within 30 days versus not."
+    },
+    "nyc_tlc_yellow": {
+      "target": "tip_amount",
+      "dropped": [
+        "tip_amount",
+        "total_amount",
+        "payment_type"
+      ],
+      "subgroups": [
+        "payment_type",
+        "PULocationID_band"
+      ],
+      "note": "Label is a RECORDED tip: cash tips are not captured. `total_amount` includes the tip and `payment_type` determines whether one is recorded, so both are excluded as leakage."
+    }
+  },
+  "baselines": {
+    "bank_marketing": {
+      "roc_auc": 0.790031291039063,
+      "pr_auc": 0.436684651940557,
+      "train_rows": 25318
+    },
+    "diabetes_130us": {
+      "roc_auc": 0.6676318368889891,
+      "pr_auc": 0.2142414890716378,
+      "train_rows": 56989
+    },
+    "nyc_tlc_yellow": {
+      "roc_auc": 0.8686859773086255,
+      "pr_auc": 0.8773059574320053,
+      "train_rows": 175000
+    }
+  },
+  "n_gates": 240,
+  "n_infeasible": 39
+}

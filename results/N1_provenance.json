@@ -1,0 +1,84 @@
+{
+  "notebook": "P2_N1_census_and_payloads",
+  "generated_at_utc": "2026-08-08T15:18:02+00:00",
+  "census_version": "1.0.0",
+  "prompt_version": "1.0.0",
+  "docs_version": "1.0.0",
+  "sample_seed": 20260807,
+  "conditions": [
+    "A2",
+    "A3",
+    "A4",
+    "A5"
+  ],
+  "doc_coverage": {
+    "bank_marketing": {
+      "corpus_id": "bank_marketing",
+      "n_columns": 17,
+      "n_documented": 17,
+      "coverage": 1.0,
+      "undocumented": [],
+      "orphaned_docs": []
+    },
+    "diabetes_130us": {
+      "corpus_id": "diabetes_130us",
+      "n_columns": 50,
+      "n_documented": 50,
+      "coverage": 1.0,
+      "undocumented": [],
+      "orphaned_docs": []
+    },
+    "online_retail_ii": {
+      "corpus_id": "online_retail_ii",
+      "n_columns": 8,
+      "n_documented": 8,
+      "coverage": 1.0,
+      "undocumented": [],
+      "orphaned_docs": []
+    },
+    "nyc_tlc_yellow": {
+      "corpus_id": "nyc_tlc_yellow",
+      "n_columns": 20,
+      "n_documented": 20,
+      "coverage": 1.0,
+      "undocumented": [],
+      "orphaned_docs": []
+    }
+  },
+  "prompt_hashes": {
+    "bank_marketing|A2": "d8d67f95ed59b6f00b7becb28fb037a24f8a094e96f0ea7b2f670a74350b1479",
+    "bank_marketing|A3": "f7b7cf3e62ca6730090cac4decc9a989820cc0ec0c3e0712795b4a451952f2d8",
+    "bank_marketing|A4": "6c76e27cad40b866545071c97222e8478e59c2716197c489e613a6314ab10c32",
+    "bank_marketing|A5": "c6fea92086c65e42f04467f43be55d4ecb5b54a9ebf26593dfd2a7b7ba8819f7",
+    "diabetes_130us|A2": "e8a584936096497704a1c8d19551e4d241796bb6621a3d6db9a9871db261943b",
+    "diabetes_130us|A3": "a1cc081ad860a2223d9267b1fed0d34c50bef8d8c992f8ece20750ae7ccf82aa",
+    "diabetes_130us|A4": "1f5e836b783f15417abc1397e13c1e53e0834e7e2c59397c5a8ec6be936f5fe3",
+    "diabetes_130us|A5": "4fb068551e5442d49ac32c61b9fa42b38fbf4a0b847451e90e31ef64f9e39d5a",
+    "online_retail_ii|A2": "b6f66aee44fe6f911828475fb679abbd680f5619facd3ae55d708e7a1c5692e6",
+    "online_retail_ii|A3": "7ba9ce6f242f0fa4c94da529b71eefb5a524cf172b5cf9bfc4d987a1f3b8d97d",
+    "online_retail_ii|A4": "5d161ccd1da6d750f3c82fa75139d0b173ac984551f1bb055c4028368b948969",
+    "online_retail_ii|A5": "833eb0b2595c112bc92d0f2a8cadcb6788b15c071c0318c000518163ed7e7cc8",
+    "nyc_tlc_yellow|A2": "a5b84085a999a125ab4ef01982077fa4bcf1b37e78bce2fe15b8e81702ab8274",
+    "nyc_tlc_yellow|A3": "ce448934b20c3174bb279bdd2b375c00d7f6779b411521e8c3a2e386227ea990",
+    "nyc_tlc_yellow|A4": "22b46a9320a4894d23282104e6fdbecc7645671204b195e70107ee9c0a939273",
+    "nyc_tlc_yellow|A5": "85abeed62a5295936873489d7f0c3247c85f4929e50096d65b6ce97f1ae0bcb9"
+  },
+  "prompt_sizes_chars": {
+    "bank_marketing|A2": 1406,
+    "bank_marketing|A3": 3232,
+    "bank_marketing|A4": 7353,
+    "bank_marketing|A5": 13144,
+    "diabetes_130us|A2": 2266,
+    "diabetes_130us|A3": 10896,
+    "diabetes_130us|A4": 17485,
+    "diabetes_130us|A5": 40197,
+    "online_retail_ii|A2": 1294,
+    "online_retail_ii|A3": 2228,
+    "online_retail_ii|A4": 6612,
+    "online_retail_ii|A5": 10819,
+    "nyc_tlc_yellow|A2": 1609,
+    "nyc_tlc_yellow|A3": 3931,
+    "nyc_tlc_yellow|A4": 10563,
+    "nyc_tlc_yellow|A5": 20351
+  }
+}

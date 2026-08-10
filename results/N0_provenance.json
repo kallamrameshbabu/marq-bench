@@ -1,0 +1,118 @@
+{
+  "census_version": "1.0.0",
+  "checkpoint_version": "1.0.0",
+  "generated_at_utc": "2026-08-08T14:34:13+00:00",
+  "notebook": "P2_N0_environment",
+  "prompt_version": "1.0.0",
+  "read_config": {
+    "bank_marketing": {
+      "expected_rows": 45211,
+      "format": "csv",
+      "note": "Semicolon-delimited, all fields quoted. No genuine nulls. 'unknown' in job/education/contact/poutcome is a real level; pdays = -1 is a real value. Nothing is converted to NaN.",
+      "read_kwargs": {
+        "keep_default_na": false,
+        "na_values": [],
+        "quotechar": "\"",
+        "sep": ";"
+      }
+    },
+    "diabetes_130us": {
+      "expected_rows": 101766,
+      "format": "csv",
+      "note": "CRITICAL: keep_default_na=False. '?' marks missing in weight/payer_code/medical_specialty/race/diag_*; 'None' in max_glu_serum and A1Cresult means the test was not administered and is a VALID value. Default pandas would convert 96,420 'None' values to NaN and destroy the finding.",
+      "read_kwargs": {
+        "keep_default_na": false,
+        "na_values": []
+      }
+    },
+    "nyc_tlc_yellow": {
+      "format": "parquet",
+      "note": "Parquet carries real nulls natively; no token translation. RatecodeID has BOTH nulls (23.35%) and the encoded value 99 (3.44%) and both must survive loading intact.",
+      "read_kwargs": {}
+    },
+    "online_retail_ii": {
+      "expected_rows": 1067371,
+      "format": "excel",
+      "note": "CRITICAL: UCI distributes this as online_retail_II.xlsx with TWO sheets \u2014 'Year 2009-2010' (525,461 rows) and 'Year 2010-2011' (541,910 rows). pd.read_excel(path) with no sheet_name reads only the FIRST sheet and silently returns half the corpus with no error. sheet_name=None reads all sheets; they are concatenated in workbook order. Blank Customer ID and Description are genuinely absent, so '' maps to NaN; no other token does.",
+      "read_kwargs": {
+        "sheet_name": null
+      }
+    }
+  },
+  "source_files": {
+    "bank_marketing": {
+      "bytes": 4610348,
+      "path": "data/bank-full.csv",
+      "sha256": "d1513ec63b385506f7cfce9f2c5caa9fe99e7ba4e8c3fa264b3aaf0f849ed32d"
+    },
+    "diabetes_130us": {
+      "bytes": 19159383,
+      "path": "data/diabetic_data.csv",
+      "sha256": "0689e7ec031237dc63031b938805c48377748761a3b26acab621567afa24df97"
+    },
+    "nyc_tlc_yellow": {
+      "bytes": 69699174,
+      "path": "data/c4_nyc_tlc/yellow_tripdata_2026-05.parquet",
+      "sha256": "9aa5a1609e2bf07d9051b7d530de05b1019e12a560ecb2c59c137c8b3a8b6750"
+    },
+    "online_retail_ii": {
+      "bytes": 45622278,
+      "path": "data/online_retail_II.xlsx",
+      "sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980"
+    }
+  },
+  "splits": {
+    "bank_marketing": {
+      "authoring_fraction": 0.2,
+      "authoring_index_sha256": "357727425d51297ec9d6c3b04641085a41baf0d466f7ff00a2455f575ed32e4e",
+      "authoring_rows": 9042,
+      "census_version": "1.0.0",
+      "corpus_id": "bank_marketing",
+      "evaluation_index_sha256": "330aa5dcd6464046277ff828994e486aeb10852ff2ceb9d2e00ab4dc468ead0f",
+      "evaluation_rows": 36169,
+      "source_rows": 45211,
+      "split_seed": 20260807,
+      "subsample_rows": null,
+      "subsample_seed": null
+    },
+    "diabetes_130us": {
+      "authoring_fraction": 0.2,
+      "authoring_index_sha256": "d6549d2c0a568fce192219b8036a73fe6b64b56eff87394427539a2175a9c1d0",
+      "authoring_rows": 20353,
+      "census_version": "1.0.0",
+      "corpus_id": "diabetes_130us",
+      "evaluation_index_sha256": "4b8e9a5b4ad0e7af93166ea4ca3410387a1113ab0f2806a0545d346dc4c26171",
+      "evaluation_rows": 81413,
+      "source_rows": 101766,
+      "split_seed": 20260807,
+      "subsample_rows": null,
+      "subsample_seed": null
+    },
+    "nyc_tlc_yellow": {
+      "authoring_fraction": 0.2,
+      "authoring_index_sha256": "949163fc299d544dcb63cbb7ec79a2bdca7328288ff147046a621438c4b690e2",
+      "authoring_rows": 200000,
+      "census_version": "1.0.0",
+      "corpus_id": "nyc_tlc_yellow",
+      "evaluation_index_sha256": "5bf72f20a4140e37bf95054ae42f356d0626e81a5f0192495ab4f29961841b49",
+      "evaluation_rows": 800000,
+      "source_rows": 4090836,
+      "split_seed": 20260807,
+      "subsample_rows": 1000000,
+      "subsample_seed": 20260807
+    },
+    "online_retail_ii": {
+      "authoring_fraction": 0.2,
+      "authoring_index_sha256": "f42192148065ed4e5ab38effb9e97e3be8698d7b3db796048b2bfd20e346112a",
+      "authoring_rows": 213474,
+      "census_version": "1.0.0",
+      "corpus_id": "online_retail_ii",
+      "evaluation_index_sha256": "c9a0b26ff1fa618ec08b676e5c6e6e769598525809b65cbbe029b97b11a73839",
+      "evaluation_rows": 853897,
+      "source_rows": 1067371,
+      "split_seed": 20260807,
+      "subsample_rows": null,
+      "subsample_seed": null
+    }
+  }
+}
