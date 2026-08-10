@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+venv/
+.venv/
+
+# Corpora are not redistributed — see data/README.md
+data/*.csv
+data/*.xlsx
+data/*.parquet
+!data/README.md
+
+# Local scratch
+checkpoints/
+*.tmp

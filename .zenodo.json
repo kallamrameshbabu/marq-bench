@@ -1,0 +1,32 @@
+{
+  "title": "MARQ-Bench: Machine-Authored Rule Quality \u2014 benchmark, harness, and rule corpus",
+  "upload_type": "software",
+  "license": "mit",
+  "creators": [
+    {
+      "name": "Kallam, Ramesh Babu",
+      "affiliation": "Independent Researcher, Cloud Data Engineering, West Chester, Ohio 45069, United States",
+      "orcid": "0009-0008-5220-1775"
+    }
+  ],
+  "description": "<p>Reproducibility artefact for <em>No Single Source Suffices: Documentation and Profiling Prevent Different Failures in Machine-Authored Data Quality Rules</em>.</p><p>Contains the MARQ-Bench harness (rule intermediate representation, prompt construction across four information conditions, corpus profiling, provider-agnostic generation, failure coding, downstream and fairness evaluation), the full pipeline as executable notebooks, 137 tests, the corpus of 7,609 machine-authored rules with failure codes and retention, the complete raw model responses, and all analysis outputs and figures.</p><p>All analysis in the paper can be reproduced from the released outputs without an API key.</p>",
+  "keywords": [
+    "data quality",
+    "validation rules",
+    "large language models",
+    "data governance",
+    "lakehouse",
+    "reproducibility",
+    "benchmark"
+  ],
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.21813665",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "doi"
+    }
+  ]
+}
