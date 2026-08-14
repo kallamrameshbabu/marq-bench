@@ -1,0 +1,13 @@
+corpus,model,control,header_verbatim_chars,header_pct,feature_names_recovered,row_exact,failed_tests
+bank_marketing,claude-haiku-4-5-20251001,False,491,0.2154,13/13,0,-
+diabetes_130us,claude-haiku-4-5-20251001,False,14,0.0085,31/38,0,-
+nyc_tlc_yellow,claude-haiku-4-5-20251001,True,7,0.0066,9/15,0,first_token
+online_retail_ii,claude-haiku-4-5-20251001,False,48,0.0357,5/6,0,-
+bank_marketing,claude-sonnet-4-5-20250929,False,1148,1.0,13/13,1,-
+diabetes_130us,claude-sonnet-4-5-20250929,False,37,0.0456,38/38,0,-
+nyc_tlc_yellow,claude-sonnet-4-5-20250929,True,4,0.0067,10/15,0,first_token
+online_retail_ii,claude-sonnet-4-5-20250929,False,62,0.0745,6/6,0,-
+bank_marketing,gemini-3.1-flash-lite,False,911,0.7449,12/13,0,-
+diabetes_130us,gemini-3.1-flash-lite,False,21,0.02,37/38,0,-
+nyc_tlc_yellow,gemini-3.1-flash-lite,True,3,0.0049,12/15,0,first_token
+online_retail_ii,gemini-3.1-flash-lite,False,163,0.1241,5/6,0,-
