@@ -94,17 +94,23 @@ N4_BY_CORPUS_FALLBACK = {
     ("nyc_tlc_yellow", "sonnet"): [-0.2891, -0.3647, -0.2814, -0.2164],
 }
 
-# Across-seed Jaccard, from N3 section 11 (cell means).
-JACCARD = pd.DataFrame(
-    {
-        "A2": [0.697, 0.483, 0.300, 0.806, 0.529, 0.716, 0.747, 0.504],
-        "A3": [0.967, 0.676, 0.848, 0.756, 0.885, 0.785, 0.466, 0.578],
-        "A4": [0.908, 0.805, 0.729, 0.632, 0.628, 0.358, 0.273, 0.803],
-        "A5": [0.840, 0.690, 0.629, 0.770, 0.387, 0.396, 0.286, 0.567],
-    },
-    index=["Bank/Haiku", "Bank/Sonnet", "Diabetes/Haiku", "Diabetes/Sonnet",
-           "TLC/Haiku", "TLC/Sonnet", "Retail/Haiku", "Retail/Sonnet"],
-)
+def load_jaccard(path: Path | None) -> pd.DataFrame:
+    """Across-seed Jaccard per corpus x model cell, from N3_stability.csv.
+
+    Read from file rather than hardcoded so the figure tracks the model panel:
+    a hardcoded table silently plots the wrong number of cells when a model is
+    added.
+    """
+    if path is None or not Path(path).exists():
+        raise SystemExit(
+            "fig2 needs --stability path/to/N3_stability.csv")
+    st = pd.read_csv(path)
+    piv = st.pivot_table(index=["corpus", "model"], columns="condition",
+                         values="jaccard_mean")
+    piv.index = [f"{c.split('_')[0].title()}/"
+                 f"{'Gemini' if 'gemini' in m else m.split('-')[1].title()}"
+                 for c, m in piv.index]
+    return piv[CONDITIONS]
 
 
 def bootstrap_ci(x, n=10000, seed=20260807):
@@ -173,7 +179,9 @@ def figure1(d: pd.DataFrame, out: Path):
     axes[0].set_title("Documentation and profiling prevent\ndifferent failures",
                       fontweight="bold", loc="left")
     fig.text(0.5, -0.11,
-             "Mean failures per rule set; whiskers are 95% bootstrap CIs\n(n = 80 per condition). Green marks the best condition.",
+             f"Mean failures per rule set; whiskers are 95% bootstrap CIs\n"
+             f"(n = {len(d)//len(CONDITIONS)} per condition). "
+             "Green marks the best condition.",
              ha="center", fontsize=7, color="#555555")
     save(fig, out, "fig1_complementarity")
 
@@ -182,7 +190,7 @@ def figure1(d: pd.DataFrame, out: Path):
 # Figure 2 — stability
 # --------------------------------------------------------------------------
 
-def figure2(out: Path):
+def figure2(JACCARD: pd.DataFrame, out: Path):
     fig, ax = plt.subplots(figsize=(3.5, 2.9))
     x = np.arange(len(CONDITIONS))
     rng = np.random.default_rng(7)
@@ -212,10 +220,12 @@ def figure2(out: Path):
     ax.set_ylim(0, 1.0)
     ax.set_title("Identical prompts yield different rule sets",
                  fontweight="bold", loc="left")
-    ax.annotate("75% of cells below 0.80", xy=(0.02, 0.06),
+    below = (JACCARD < 0.80).values.mean()
+    ax.annotate(f"{below:.0%} of cells below 0.80", xy=(0.02, 0.06),
                 xycoords="axes fraction", fontsize=7.5, color="#333333")
     fig.text(0.5, -0.10,
-             "Each point is one corpus x model cell (n = 8); red bars are condition means.",
+             f"Each point is one corpus x model cell (n = {len(JACCARD)}); "
+             "red bars are condition means.",
              ha="center", fontsize=7, color="#555555")
     save(fig, out, "fig2_stability")
 
@@ -230,7 +240,19 @@ def figure3(n4: pd.DataFrame | None, out: Path):
                                                "wspace": 0.30})
     x = np.arange(len(CONDITIONS))
 
+    n_planned, pooled_n, legend_title = 0, 0, "model panel"
     if n4 is not None and len(n4):
+        pooled_n = len(n4)
+        # 3 supervised corpora x models x 4 conditions x 10 seeds
+        n_models = n4.model_id.nunique()
+        n_planned = 3 * n_models * 4 * 10
+        marks_desc = {"haiku": "solid/o", "sonnet": "dashed/s", "gemini": "dotted/^"}
+        present = []
+        for m in sorted(n4.model_id.unique()):
+            short = ("haiku" if "haiku" in m else
+                     "gemini" if "gemini" in m else "sonnet")
+            present.append(f"{marks_desc.get(short,'-')} = {short.title()}")
+        legend_title = ",  ".join(present)
         rows = []
         for c in CONDITIONS:
             v = n4.loc[n4.condition == c, "delta_auc"].values
@@ -239,7 +261,8 @@ def figure3(n4: pd.DataFrame | None, out: Path):
         pooled = pd.DataFrame(rows)
         by_corpus = {}
         for (corp, mod), g in n4.groupby(["corpus_id", "model_id"]):
-            short = "haiku" if "haiku" in mod else "sonnet"
+            short = ("haiku" if "haiku" in mod
+                 else "gemini" if "gemini" in mod else "sonnet")
             by_corpus[(corp, short)] = [
                 g.loc[g.condition == c, "delta_auc"].mean() for c in CONDITIONS]
     else:
@@ -258,19 +281,22 @@ def figure3(n4: pd.DataFrame | None, out: Path):
                   fontweight="bold", loc="left")
     axL.annotate("all 95% CIs below zero", xy=(0.03, 0.10),
                  xycoords="axes fraction", fontsize=7.5, color="#333333")
-    axL.annotate("feasible gates only —\n39 more were unfittable",
+    n_feasible = int(pooled_n) if pooled_n else 0
+    axL.annotate(f"feasible gates only ({n_feasible} of {n_planned});\n"
+                 f"{n_planned - n_feasible} were unfittable",
                  xy=(0.03, 0.015), xycoords="axes fraction", fontsize=6.8,
                  color="#777777")
 
     style = {"bank_marketing": (OKABE["blue"], "Bank"),
              "diabetes_130us": (OKABE["green"], "Diabetes"),
              "nyc_tlc_yellow": (OKABE["vermil"], "NYC TLC")}
+    marks = {"haiku": ("o", "-"), "sonnet": ("s", "--"), "gemini": ("^", ":")}
     seen = set()
-    for (corp, mod), vals in by_corpus.items():
+    for (corp, mod), vals in sorted(by_corpus.items()):
         colour, label = style[corp]
-        axR.plot(x, vals, marker="o" if mod == "haiku" else "s",
-                 markersize=4.5, linewidth=1.3, color=colour,
-                 linestyle="-" if mod == "haiku" else "--",
+        mk, ls = marks.get(mod, ("D", "-."))
+        axR.plot(x, vals, marker=mk, markersize=4.5, linewidth=1.3,
+                 color=colour, linestyle=ls,
                  label=label if corp not in seen else None, alpha=0.9)
         seen.add(corp)
     axR.axhline(0, color="#222222", linewidth=1.0)
@@ -280,7 +306,7 @@ def figure3(n4: pd.DataFrame | None, out: Path):
     axR.set_title("NYC TLC degrades by an order\nof magnitude more",
                   fontweight="bold", loc="left")
     axR.legend(loc="upper center", bbox_to_anchor=(0.5, -0.22), ncol=3,
-               fontsize=7.5, title="solid = Haiku,  dashed = Sonnet",
+               fontsize=7.5, title=legend_title,
                title_fontsize=7)
     axR.axhspan(-0.08, 0.01, color=OKABE["grey"], alpha=0.10, zorder=0)
     axR.annotate("Bank and Diabetes\nall within -0.07 to +0.001",
@@ -345,13 +371,17 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n3", required=True, help="N3_scored_rulesets.csv")
     ap.add_argument("--n4", default=None, help="N4_downstream.csv (optional)")
+    ap.add_argument("--stability", default=None, help="N3_stability.csv")
     ap.add_argument("--out", default="figures", help="output directory")
     args = ap.parse_args()
 
     d = pd.read_csv(args.n3)
-    d = d[d.model.str.startswith("claude")]
-    d = d[~d.model.str.contains("opus")]
-    print(f"N3: {len(d)} rule sets")
+    # Exclude only what is genuinely not part of the panel. A whitelist on
+    # vendor name silently drops any model added later, which is how the
+    # first three-model run plotted 320 of 480 sets.
+    EXCLUDE = {"mock-1", "qwen2.5-7b", "claude-opus-4-8"}
+    d = d[~d.model.isin(EXCLUDE)]
+    print(f"N3: {len(d)} rule sets | models: {sorted(d.model.unique())}")
 
     n4 = None
     if args.n4 and Path(args.n4).exists():
@@ -367,7 +397,7 @@ def main():
 
     out = Path(args.out)
     figure1(d, out)
-    figure2(out)
+    figure2(load_jaccard(args.stability), out)
     figure3(n4, out)
     figure4(out)
     print(f"\nAll figures written to {out.resolve()}")
