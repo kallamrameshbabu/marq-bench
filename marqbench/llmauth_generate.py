@@ -40,6 +40,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import re
 import time
 import traceback
 from dataclasses import dataclass, field, asdict
@@ -52,6 +53,7 @@ from llmauth_prompts import PromptBundle
 __all__ = [
     "GENERATE_VERSION", "GenerationResult", "RunKey", "SweepPlan",
     "Backend", "MockBackend", "AnthropicBackend", "OpenAIBackend",
+    "GeminiBackend",
     "HuggingFaceBackend", "RunLog", "run_sweep", "estimate_cost",
     "preflight_backends", "list_anthropic_models", "resolve_hf_revision",
     "NON_RETRYABLE_ERRORS",
@@ -309,6 +311,123 @@ class OpenAIBackend:
                 "seed_applied": bool(self._seed_supported),
                 "max_tokens": max_tokens,
             },
+        )
+
+
+class GeminiBackend:
+    """Adapter for the Google Gemini API.
+
+    Included to give the model panel a second vendor and a genuinely
+    independent architecture, which is the most likely reviewer request for a
+    study whose panel is otherwise single-vendor.
+
+    FREE TIER
+    ---------
+    Gemini offers a free tier with no card required, but the quotas have
+    changed repeatedly and published figures disagree. Do not hard-code an
+    assumption about them. This adapter instead:
+
+      - paces requests to a configurable requests-per-minute budget;
+      - on a 429, honours the server's retry delay if it supplies one, and
+        otherwise backs off exponentially;
+      - raises a clear DailyQuotaExhausted when the daily cap is hit, so the
+        sweep stops cleanly rather than burning attempts.
+
+    Because the sweep is resumable, a restrictive daily cap simply means the
+    160 runs complete across several days at no cost.
+
+    DATA USE
+    --------
+    Google's terms state that free-tier prompts may be used to improve their
+    models; paid tier and Vertex AI do not. Every prompt in this study is
+    derived from public corpora and contains no proprietary content, so this is
+    disclosable rather than disqualifying — but it MUST be disclosed in the
+    paper's methods. Verify the current terms before running.
+    """
+
+    class DailyQuotaExhausted(RuntimeError):
+        """Raised when the daily request cap is reached. Resume tomorrow."""
+
+    def __init__(self, model_id: str, api_key: str | None = None,
+                 requests_per_minute: float = 10.0):
+        from google import genai
+        self.model_id = model_id
+        self._genai = genai
+        self._client = genai.Client(
+            api_key=api_key or os.environ.get("GOOGLE_API_KEY")
+            or os.environ.get("GEMINI_API_KEY"))
+        self.min_interval = 60.0 / max(requests_per_minute, 0.1)
+        self._last_call = 0.0
+
+    def _pace(self):
+        wait = self.min_interval - (time.time() - self._last_call)
+        if wait > 0:
+            time.sleep(wait)
+        self._last_call = time.time()
+
+    @staticmethod
+    def _retry_delay(exc) -> float | None:
+        """Seconds the server asked us to wait, if it said."""
+        m = re.search(r"retryDelay['\"]?\s*[:=]\s*['\"]?(\d+(?:\.\d+)?)",
+                      str(exc))
+        return float(m.group(1)) if m else None
+
+    def generate(self, system, user, *, temperature, seed, max_tokens):
+        from google.genai import types
+
+        cfg = types.GenerateContentConfig(
+            system_instruction=system,
+            temperature=temperature,
+            max_output_tokens=max_tokens,
+        )
+
+        for attempt in range(1, 6):
+            self._pace()
+            try:
+                resp = self._client.models.generate_content(
+                    model=self.model_id, contents=user, config=cfg)
+                break
+            except Exception as exc:  # noqa: BLE001
+                msg = str(exc)
+                is_429 = "429" in msg or "RESOURCE_EXHAUSTED" in msg.upper()
+                # 503 UNAVAILABLE means the model is busy, not that we are over
+                # quota. It is transient and must be retried — treating it as
+                # fatal silently truncates a run and leaves gaps that look like
+                # results.
+                is_503 = "503" in msg or "UNAVAILABLE" in msg.upper()
+                if not (is_429 or is_503):
+                    raise
+                if is_503:
+                    delay = min(self.min_interval * 2 ** attempt, 60.0)
+                    print(f"  [gemini] 503 model busy, waiting {delay:.0f}s "
+                          f"(attempt {attempt}/5)")
+                    time.sleep(delay)
+                    continue
+                if "PerDay" in msg or "per day" in msg.lower():
+                    raise self.DailyQuotaExhausted(
+                        "Gemini daily free-tier quota exhausted. The run log is "
+                        "resumable — re-run the sweep cell tomorrow and it will "
+                        "continue from where it stopped."
+                    ) from exc
+                delay = self._retry_delay(exc) or (self.min_interval * 2 ** attempt)
+                print(f"  [gemini] rate limited, waiting {delay:.0f}s "
+                      f"(attempt {attempt}/5)")
+                time.sleep(delay)
+        else:
+            raise RuntimeError("Gemini: exhausted rate-limit retries")
+
+        text = getattr(resp, "text", "") or ""
+        usage = getattr(resp, "usage_metadata", None)
+        return BackendResponse(
+            text=text,
+            model_version=getattr(resp, "model_version", None) or self.model_id,
+            input_tokens=getattr(usage, "prompt_token_count", None),
+            output_tokens=getattr(usage, "candidates_token_count", None),
+            applied_params={"temperature": temperature,
+                            "temperature_applied": True,
+                            "seed_applied": False,   # no seed parameter
+                            "max_tokens": max_tokens,
+                            "requests_per_minute": 60.0 / self.min_interval},
         )
 
 
